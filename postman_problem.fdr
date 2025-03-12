@@ -1,0 +1,86 @@
+// Define Domain
+NODES = {n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14};
+POSTMEN = {p1};
+MAILS = {m1, m2};
+MAILBOXES = {b1};
+POSITIONS = NODES+MAILBOXES+POSTMEN;
+
+// Define contraints
+equal(n1, n1);
+equal(n2, n2);
+equal(n3, n3);
+equal(n4, n4);
+equal(n5, n5);
+equal(n6, n6);
+equal(n7, n7);
+equal(n8, n8);
+equal(n9, n9);
+equal(n10, n10);
+equal(n11, n11);
+equal(n12, n12);
+equal(n13, n13);
+equal(n14, n14);
+equal(p1, p1);
+
+// Define bidirectional roads
+road(n1, n2);
+road(n2, n1);
+road(n2, n3);
+road(n3, n2);
+road(n3, n4);
+road(n4, n3);
+road(n4, n5);
+road(n5, n4);
+road(n5, n12);
+road(n12, n5);
+road(n2, n11);
+road(n11, n2);
+road(n11, n6);
+road(n6, n11);
+road(n11, n9);
+road(n9, n11);
+road(n9, n10);
+road(n10, n9);
+road(n6, n10);
+road(n10, n6);
+road(n10, n8);
+road(n8, n10);
+road(n8, n13);
+road(n13, n8);
+road(n13, n14);
+road(n14, n13);
+
+// One-way metro routes
+metro_route(n2, n3);
+metro_route(n3, n7);
+metro_route(n7, n8);
+metro_route(n8, n6);
+metro_route(n6, n2);
+metro_route(n6, n7);
+
+// Define state variables
+loc(p1):NODES;
+loc(b1):NODES;
+pos(m1):POSITIONS;
+pos(m2):POSITIONS;
+
+// Define actions
+walk(P:POSTMEN, X:NODES, Y:NODES)
+pre: !equal(X,Y) & loc(P)=X & road(X, Y)
+eff: loc(P)<-Y;
+
+take_metro(P:POSTMEN, X:NODES, Y:NODES)
+pre: !equal(X,Y) & loc(P)=X & metro_route(X, Y)
+eff: loc(P)<-Y;
+
+collect_mail(P:POSTMEN, X:NODES, M:MAILS)
+pre: loc(P)=X & pos(M)=X
+eff: pos(M)<-P;
+
+deliver_mail(P:POSTMEN, X:NODES, B:MAILBOXES, M:MAILS)
+pre: loc(P)=X & loc(B)=X & pos(M)=P
+eff: pos(M)<-B;
+
+// Define initial state and goal
+initial = {loc(p1)<-n14, pos(m1)<-n10, pos(m2)<-n13, loc(b1)<-n7};
+goals = {pos(m1)<-b1, pos(m2)<-b1};
